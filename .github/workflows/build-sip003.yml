@@ -33,6 +33,7 @@ jobs:
           mkdir openssl
           tar --extract --gzip --strip-components=1 --file=openssl.tar.gz --directory=openssl
           export OPENSSL_ROOT_DIR=$(pwd)/openssl
+          export OPENSSL_INCLUDE_DIR=$(pwd)/openssl/include
 
           ndk_version=$(basename "${ANDROID_NDK_HOME:?}")
           sed -Ei 's|(^\s*ndkVersion\s*=\s*)"[^"]+"|\1"'"$ndk_version"'"|' app/build.gradle.kts
