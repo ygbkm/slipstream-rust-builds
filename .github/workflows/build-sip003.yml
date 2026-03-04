@@ -1,0 +1,30 @@
+name: build-sip003
+
+on:
+  workflow_dispatch:
+
+env:
+  UPSTREAM_URL: https://github.com/Mygod/slipstream-plugin-android
+  UPSTREAM_BRANCH: master
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Build APK
+        run: |
+          mkdir src
+          cd src
+          git clone "${UPSTREAM_URL:?}" .
+          chmod 755 gradlew
+          ./gradlew clean assembleRelease --no-daemon
+
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: slipdroid-apk
+          path: src/app/build/outputs/**/*.apk
