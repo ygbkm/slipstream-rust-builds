@@ -22,12 +22,13 @@ jobs:
           cd src
 
           git clone "${UPSTREAM_URL:?}" .
+          git submodule update --init --recursive
 
           ndk_version=$(basename "${ANDROID_NDK_HOME:?}")
           sed -Ei 's|(^\s*ndkVersion\s*=\s*)"[^"]+"|\1"'"$ndk_version"'"|' app/build.gradle.kts
 
           chmod 755 gradlew
-          ./gradlew clean assembleRelease --no-daemon
+          ./gradlew assembleRelease --no-daemon
 
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v7
