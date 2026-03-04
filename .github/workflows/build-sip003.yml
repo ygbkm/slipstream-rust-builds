@@ -29,14 +29,13 @@ jobs:
           git clone "${UPSTREAM_URL:?}" .
           git submodule update --init --recursive
 
-          curl -fsSL "${OPENSSL_URL:?}" -o openssl.tar.gz
-          mkdir openssl
-          tar --extract --gzip --strip-components=1 --file=openssl.tar.gz --directory=openssl
-          export OPENSSL_ROOT_DIR=$(pwd)/openssl
-          export OPENSSL_INCLUDE_DIR=$(pwd)/openssl/include
+          # Disable picoquic's OpenSSL
+          picoquic_cmake=$(find -ipath '*/vendor/picoquic/cmakelists.txt' | head -n1)
+          sed -Ei 's|(^\s*OPTION\(WITH_OPENSSL.*\s+)ON\)\s*$|\1OFF\)|' "${picoquic_cmake:?}"
 
+          # Fix gradle build's NDK version
           ndk_version=$(basename "${ANDROID_NDK_HOME:?}")
-          sed -Ei 's|(^\s*ndkVersion\s*=\s*)"[^"]+"|\1"'"$ndk_version"'"|' app/build.gradle.kts
+          sed -Ei 's|(^\s*ndkVersion\s*=\s*)"[^"]+"|\1"'"${ndk_version:?}"'"|' app/build.gradle.kts
 
           chmod 755 gradlew
           ./gradlew assembleRelease --no-daemon
